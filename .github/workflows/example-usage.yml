@@ -1,0 +1,49 @@
+name: Premium Request Usage Report
+
+on:
+  schedule:
+    # Runs on the 1st of every month at 9 AM UTC
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Report start date (YYYY-MM-DD)'
+        required: true
+      end_date:
+        description: 'Report end date (YYYY-MM-DD)'
+        required: false
+
+jobs:
+  download-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Calculate date range (for scheduled runs)
+        id: dates
+        if: github.event_name == 'schedule'
+        run: |
+          # Last month's start and end dates
+          START=$(date -d "$(date +%Y-%m-01) -1 month" +%Y-%m-%d)
+          END=$(date -d "$(date +%Y-%m-01) -1 day" +%Y-%m-%d)
+          echo "start_date=$START" >> "$GITHUB_OUTPUT"
+          echo "end_date=$END" >> "$GITHUB_OUTPUT"
+
+      - name: Download premium request report
+        id: report
+        uses: abirismyname/ai-credits-audit-reports@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
+          ent_name: ${{ vars.ENTERPRISE_SLUG }}
+          report_type: premium_request
+          start_date: ${{ github.event_name == 'schedule' && steps.dates.outputs.start_date || inputs.start_date }}
+          end_date: ${{ github.event_name == 'schedule' && steps.dates.outputs.end_date || inputs.end_date }}
+          csv_path: data/premium-requests-report.csv
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-requests-report-${{ github.run_id }}
+          path: ${{ steps.report.outputs.csv_path }}
+          retention-days: 90

@@ -1,0 +1,37 @@
+name: 'AI Credits Audit Report'
+description: 'Download premium request usage billing reports for a GitHub enterprise.'
+branding:
+  icon: download
+  color: orange
+inputs:
+  GITHUB_TOKEN:
+    description: 'PAT with manage_billing:enterprise scope'
+    required: true
+  ent_name:
+    description: 'GitHub Enterprise slug'
+    required: true
+  report_type:
+    description: 'Report type: premium_request, detailed, or summarized'
+    required: true
+    default: 'premium_request'
+  start_date:
+    description: 'Start date in YYYY-MM-DD format'
+    required: true
+  end_date:
+    description: 'End date in YYYY-MM-DD format (defaults to today)'
+    required: false
+  csv_path:
+    description: 'Output path for the downloaded CSV report'
+    required: true
+    default: 'data/premium-requests-report.csv'
+  poll_interval_seconds:
+    description: 'Seconds to wait between status polls (default: 30)'
+    required: false
+    default: '30'
+  max_poll_attempts:
+    description: 'Maximum number of polling attempts before failing (default: 60 = 30 min)'
+    required: false
+    default: '60'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
