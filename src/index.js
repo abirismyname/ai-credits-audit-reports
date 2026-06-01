@@ -9,7 +9,7 @@ const makeDir = require('make-dir');
 // Inputs
 const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
 const ent_Name = core.getInput('ent_name');
-const report_type = core.getInput('report_type') || 'premium_request';
+const report_type = 'ai_credits';
 const start_date = core.getInput('start_date');
 const csv_path = core.getInput('csv_path');
 const poll_interval_ms = parseInt(core.getInput('poll_interval_seconds') || '30', 10) * 1000;
