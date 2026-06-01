@@ -1,0 +1,45 @@
+name: Sample – AI Credits Audit Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Report start date (YYYY-MM-DD)'
+        required: true
+      end_date:
+        description: 'Report end date (YYYY-MM-DD)'
+        required: false
+      report_type:
+        description: 'Report type'
+        required: false
+        default: 'premium_request'
+        type: choice
+        options:
+          - premium_request
+          - detailed
+          - summarized
+
+jobs:
+  audit-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download billing report
+        id: report
+        uses: abirismyname/ai-credits-audit-reports@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
+          ent_name: ${{ secrets.ENTERPRISE_SLUG }}
+          report_type: ${{ inputs.report_type }}
+          start_date: ${{ inputs.start_date }}
+          end_date: ${{ inputs.end_date }}
+          csv_path: data/report.csv
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-credits-report-${{ github.run_id }}
+          path: ${{ steps.report.outputs.csv_path }}
+          retention-days: 90
