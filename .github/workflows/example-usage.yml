@@ -35,8 +35,7 @@ jobs:
         uses: abirismyname/ai-credits-audit-reports@main
         with:
           GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
-          ent_name: ${{ vars.ENTERPRISE_SLUG }}
-          report_type: premium_request
+          ent_name: ${{ secrets.ENTERPRISE_SLUG }}
           start_date: ${{ github.event_name == 'schedule' && steps.dates.outputs.start_date || inputs.start_date }}
           end_date: ${{ github.event_name == 'schedule' && steps.dates.outputs.end_date || inputs.end_date }}
           csv_path: data/premium-requests-report.csv
