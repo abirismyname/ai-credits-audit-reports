@@ -10,10 +10,6 @@ inputs:
   ent_name:
     description: 'GitHub Enterprise slug'
     required: true
-  report_type:
-    description: 'Report type: premium_request, detailed, or summarized'
-    required: true
-    default: 'premium_request'
   start_date:
     description: 'Start date in YYYY-MM-DD format'
     required: true
@@ -23,7 +19,7 @@ inputs:
   csv_path:
     description: 'Output path for the downloaded CSV report'
     required: true
-    default: 'data/premium-requests-report.csv'
+    default: 'data/ai-credits-audit-report.csv'
   poll_interval_seconds:
     description: 'Seconds to wait between status polls (default: 30)'
     required: false
