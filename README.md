@@ -1,6 +1,6 @@
 # AI Credits Audit Reports
 
-A GitHub Action that pulls down **premium request usage** billing data from a GitHub Enterprise account via the [Billing Reports REST API](https://docs.github.com/en/enterprise-cloud@latest/rest/enterprise-admin/billing).
+A GitHub Action that pulls down **AI credit usage** billing data from a GitHub Enterprise account via the [Billing Reports REST API](https://docs.github.com/en/enterprise-cloud@latest/rest/enterprise-admin/billing).
 
 The API generates a CSV report asynchronously (typically ~3 minutes). This action submits the request, polls for completion, downloads the CSV, and exposes it as a workflow artifact.
 
@@ -13,7 +13,7 @@ The API generates a CSV report asynchronously (typically ~3 minutes). This actio
 ## Usage
 
 ```yaml
-- name: Download premium request report
+- name: Download AI credit usage report
   uses: abirismyname/ai-credits-audit-reports@main
   with:
     GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
@@ -38,14 +38,6 @@ See [`.github/workflows/example-usage.yml`](.github/workflows/example-usage.yml)
 | `poll_interval_seconds` | | `30` | Seconds between status polls |
 | `max_poll_attempts` | | `60` | Maximum polling attempts (~30 min total) |
 
-### Report type date-range limits
-
-| `report_type` | Max range |
-|---|---|
-| `premium_request` | 31 days |
-| `detailed` | 31 days |
-| `summarized` | 366 days |
-
 ## Outputs
 
 | Output | Description |
@@ -56,27 +48,27 @@ See [`.github/workflows/example-usage.yml`](.github/workflows/example-usage.yml)
 ## Example: Upload as artifact
 
 ```yaml
-- name: Download premium request report
+- name: Download AI credit usage report
   id: report
   uses: abirismyname/ai-credits-audit-reports@main
   with:
     GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
     ent_name: ${{ vars.ENTERPRISE_SLUG }}
     start_date: '2025-01-01'
-    csv_path: data/premium-requests.csv
+    csv_path: data/ai-credits-report.csv
 
 - name: Upload artifact
   uses: actions/upload-artifact@v4
   with:
-    name: premium-requests-${{ github.run_id }}
+    name: ai-credits-report-${{ github.run_id }}
     path: ${{ steps.report.outputs.csv_path }}
     retention-days: 90
 ```
 
-## Example: Email a copy of the Premium Request Report
+## Example: Email a copy of the AI Credit Usage Report
 
 ```yaml
-name: Email Premium Request Report
+name: Email AI Credit Usage Report
 
 on:
   workflow_dispatch:
@@ -88,19 +80,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download premium request report
+      - name: Download AI credit usage report
         id: report
         uses: abirismyname/ai-credits-audit-reports@main
         with:
           GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
           ent_name: ${{ vars.ENTERPRISE_SLUG }}
           start_date: '2025-01-01'
-          csv_path: data/premium-requests.csv
+          csv_path: data/ai-credits-report.csv
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: premium-requests-${{ github.run_id }}
+          name: ai-credits-report-${{ github.run_id }}
           path: ${{ steps.report.outputs.csv_path }}
           retention-days: 90
 
@@ -113,13 +105,13 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           from: ${{ secrets.EMAIL }}
           to: ${{ secrets.EMAIL }}
-          subject: "Premium Request Usage Report"
+          subject: "AI Credit Usage Report"
           html_body: |
             <!DOCTYPE html>
             <html>
             <body>
-              <h1>Premium Request Usage Report</h1>
-              <p>Attached is the latest premium request usage report for your enterprise.</p>
+              <h1>AI Credit Usage Report</h1>
+              <p>Attached is the latest AI credit usage report for your enterprise.</p>
               <p>
                 <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
                   View the full run on GitHub.com
@@ -127,7 +119,7 @@ jobs:
               </p>
             </body>
             </html>
-          attachments: data/premium-requests.csv
+          attachments: data/ai-credits-report.csv
 ```
 
 ## How it works
