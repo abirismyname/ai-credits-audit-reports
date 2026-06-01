@@ -9,15 +9,6 @@ on:
       end_date:
         description: 'Report end date (YYYY-MM-DD)'
         required: false
-      report_type:
-        description: 'Report type'
-        required: false
-        default: 'premium_request'
-        type: choice
-        options:
-          - premium_request
-          - detailed
-          - summarized
 
 jobs:
   audit-report:
@@ -32,7 +23,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.BILLING_TOKEN }}
           ent_name: ${{ secrets.ENTERPRISE_SLUG }}
-          report_type: ${{ inputs.report_type }}
+          report_type: ai_credits
           start_date: ${{ inputs.start_date }}
           end_date: ${{ inputs.end_date }}
           csv_path: data/report.csv
